@@ -1,0 +1,8 @@
+{
+"options":
+ {
+   "metaDef": "def.meta",
+   "dbUrl": "wisdomStudy.db",
+   "staticFiles": "public"
+ }
+}
