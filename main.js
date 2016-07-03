@@ -65,10 +65,11 @@ function mainFlow(dbOptions){
                    const failedRows = dbinit.initWisdomStudyDB(db, dbOptions.metaDef);
                    callback(null, failedRows);
                },
-               function(failedRows){
+               function(failedRows, callback){
                    // todo with failed Rows, we just start sever now and do nothing...
                    console.log("Emiting stert_server event...");
                    event.emit("start_server", db);
+                   callback(null);
                }
            ], function(err, results){
                console.log(results);
