@@ -16,16 +16,39 @@ function RestServer(nedb, serverOptions) {
 
             db.find({}).sort({word:1}).limit(3).exec((err, docs) => {
                 console.log(docs);
-                // 2. for production
-                res.writeHead(200, {'Content-Type': 'application/json', 'charset':'utf-8'});
-                res.end(JSON.stringify(docs));
-                
-                // for testing in browser
-                //res.writeHead(200, {"Content-Type": "text/html;charset:utf-8"}); 
-                //res.write('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />');
-                res.end(JSON.stringify(docs));
+                //res.writeHead(200, {'Content-Type': 'application/json', 'charset':'utf-8'});
+                res.json(docs);
+                //res.writeHead(200, {'Content-Type': 'application/json', 'charset':'utf-8'});
             });
 
+        });
+
+        // 2. Search word
+        app.get("/findWords", (req, res) => {
+            console.log(req.query);
+
+            var dbQuery = {};
+　　　　　　　　　　　　if (req.query.word) {
+                dbQuery.word = req.query.word;
+            }
+            if (req.query.num) {
+                dbQuery.num = req.query.num;
+            }
+            if (req.query.strut) {
+                dbQuery.strut = req.query.strut;
+            }
+
+            
+            if(Object.keys(dbQuery).length > 0) {
+                db.find(dbQuery, {muti: true}).sort({num: 1}).exec((err, docs) => {
+                    console.log(docs);
+                    res.json(docs);
+                    //res.writeHead(200, {'Content-Type': 'application/json', 'charset':'utf-8'});
+                    //res.end();
+                });
+            }　else {
+　　　　　　　　　　　　　　　　res.end("{}");
+            }
         });
 
         

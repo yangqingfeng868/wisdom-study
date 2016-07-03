@@ -4,6 +4,7 @@ const nedb = require('nedb');
 const conf = require('./conf.json');
 const dbinit = require('./dbinit');
 const RestServer = require("./server");
+const async = require('async');
 
 // 2. init DB
 function initDB(dbOptions, loadFromRaw){
@@ -59,12 +60,18 @@ function mainFlow(dbOptions){
         });
 
         if (loadFromRaw) {
-           dbinit.initWisdomStudyDB(db, dbOptions.metaDef, (err) => {
-               if(err) 
-                   event.emit("Failed_to_setup", "error occur during nedb initializing...");
-               else
+           async.waterfall([
+               function(callback){
+                   const failedRows = dbinit.initWisdomStudyDB(db, dbOptions.metaDef);
+                   callback(null, failedRows);
+               },
+               function(failedRows){
+                   // todo with failed Rows, we just start sever now and do nothing...
+                   console.log("Emiting stert_server event...");
                    event.emit("start_server", db);
-               
+               }
+           ], function(err, results){
+               console.log(results);
            });
         } else {
             event.emit("start_server", db);
@@ -94,6 +101,7 @@ const dboptions = {
     dburl: __dirname + "/" + conf.options.dbUrl,
     metaDef: __dirname + "/" + conf.options.metaDef
 }
+
 console.log(JSON.stringify(dboptions));
 mainFlow(dboptions);
 

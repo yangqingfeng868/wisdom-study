@@ -3,22 +3,25 @@ const fs = require('fs');
 /* 
 1. 根据原始配置初始化 NeDB
 */
-function initWisdomStudyDB(db, metaDefUrl, callback){
+function initWisdomStudyDB(db, metaDefUrl){
 
     // __dirname + '/' + confObj.metaDef
     const docArray　= parseMetaIntoJsonObj(metaDefUrl);
+　　　　var errorRows = new Array();
     docArray.forEach(function(docJson){
          db.insert(docJson, (err, ret) => {
               if(err) {
                 console.log("Failed to insert doc: " + JSON.stringify(docJson) + " into Nedb");
-                callback(err);
+                errorRows.push(docJson);
               }
               else {
                 console.log("Insert doc: " + JSON.stringify(docJson) +" finished...");
-                callback(null);
               }
          });
     });
+
+    console.log("Failed to insert rows: " + JSON.stringify(errorRows));
+　　　　return errorRows;
 }
 
 // 2. 将原始配置解析成json 对象

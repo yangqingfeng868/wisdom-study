@@ -1,6 +1,7 @@
 const fs = require('fs');
 const nedb = require('nedb');
-const waterfall = require('async-waterfall');
+//const waterfall = require('async-waterfall');
+const async = require('async');
 const dbinit = require('./dbinit');
 
 
@@ -26,10 +27,7 @@ const dbinit = require('./dbinit');
           autoload: true
        });
        
-       dbinit.initWisdomStudyDB(db, confObj.metaDef, (err) => {
-           if(err)
-               console.log('Error occur during initializing db: ' + err);
-       });
+       dbinit.initWisdomStudyDB(db, confObj.metaDef);
 
        return db;
    }
@@ -47,24 +45,19 @@ const dbinit = require('./dbinit');
 
 // only for testing....
 function testInitDB() {
-   // /home/robert/project/web-nodejs/wisdom-study/test/wisdom.db
    const testDb = __dirname + '/test/wisdom.db';
-   // /home/robert/project/web-nodejs/wisdom-study/test/def.meta
    const confObj = {metaDef: __dirname + '/test/def.meta'};
 
-   waterfall([
+   async.waterfall([
       function(callback){
-          //console.log('Cleaning up db...');
           resetDB(testDb);
           callback(null, testDb, confObj);
       },
       function(testDb, confObj, callback){
-          //console.log("Loading data into db...");
           const db = loadDataIntoDB(testDb, confObj);
           callback(null, confObj, db);
       },
       function(confObj, db){
-          //console.log("Fetching data from db for testing...");
           fetchDataForTest(confObj, db);
       }
    ],function(err, ret){
