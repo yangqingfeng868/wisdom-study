@@ -1,3 +1,6 @@
+# ER Design
+- [ER 设计图图](https://github.com/yangqingfeng868/wisdom-study/blob/master/doc/wisdom-ER.png)
+
 ## 年级编码表
 - 第1位表示小学、中学、高中、其他
 	- 小学：primary
